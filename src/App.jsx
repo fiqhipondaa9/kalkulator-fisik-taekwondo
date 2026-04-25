@@ -220,6 +220,13 @@ export default function App() {
     return { lsi: lsi.toFixed(1), isDanger: lsi < 85, weakSide: r < l ? 'Kanan' : 'Kiri' };
   }, [tests.hopRight, tests.hopLeft]);
 
+  // --- FUNGSI RESET DATA ---
+  const handleReset = () => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus semua data isian?")) {
+      window.location.reload(); // Cara paling bersih untuk mereset seluruh form
+    }
+  };
+
 // --- FUNGSI EXPORT YANG TELAH DIPERBAIKI (PRODUCTION READY) ---
 const handleDownloadImage = async () => {
   setIsExporting(true);
