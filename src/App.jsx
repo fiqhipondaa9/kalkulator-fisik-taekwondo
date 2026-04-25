@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import html2canvas from 'html2canvas';
 
 // --- KOMPONEN IKON SVG (Custom agar ringan dan mandiri) ---
 const IconUser = () => <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
@@ -219,22 +220,39 @@ export default function App() {
     return { lsi: lsi.toFixed(1), isDanger: lsi < 85, weakSide: r < l ? 'Kanan' : 'Kiri' };
   }, [tests.hopRight, tests.hopLeft]);
 
-  // --- FUNGSI EXPORT YANG TELAH DIPERBAIKI (PERFECT LAYOUT FIX) ---
-  const handleDownloadImage = async () => {
-    setIsExporting(true);
+// --- FUNGSI EXPORT YANG TELAH DIPERBAIKI (PRODUCTION READY) ---
+const handleDownloadImage = async () => {
+  setIsExporting(true);
+  
+  // Tunggu DOM me-render kelas CSS `export-mode` yang baru
+  await new Promise(resolve => setTimeout(resolve, 200));
+  
+  try {
+    const element = document.getElementById('report-container');
     
-    // Tunggu DOM me-render kelas CSS `export-mode` yang baru
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Langsung panggil html2canvas karena sudah di-import di atas (bukan window.html2canvas lagi)
+    const canvas = await html2canvas(element, { 
+      scale: 2, 
+      useCORS: true, 
+      backgroundColor: "#f3f4f6",
+      windowWidth: 1200, 
+      width: 1200 
+    });
     
-    try {
-      if (!window.html2canvas) {
-        const script = document.createElement('script');
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-        document.head.appendChild(script);
-        await new Promise(resolve => script.onload = resolve);
-      }
+    const link = document.createElement("a");
+    const safeName = identity.name ? identity.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'atlet';
+    link.download = `Rapor_Fisik_Taekwondo_${safeName}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  } catch (error) {
+    console.error("Gagal export:", error);
+    alert("Gagal membuat gambar rapor. Silakan coba lagi.");
+  } finally {
+    setIsExporting(false);
+  }
+};      
       
-      const element = document.getElementById('report-container');
+const element = document.getElementById('report-container');
       
       // FIX 1: Konfigurasi html2canvas agar memaksa render dalam ukuran lebar jendela simulasi (1200px)
       // Ini menyelesaikan masalah Asimetris margin Kanan yang tadinya terpotong
