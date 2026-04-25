@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import html2canvas from 'html2canvas';
+import * as htmlToImage from 'html-to-image';
 
 // --- KOMPONEN IKON SVG (Custom agar ringan dan mandiri) ---
 const IconUser = () => <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
@@ -227,29 +227,28 @@ export default function App() {
     }
   };
 
-// --- FUNGSI EXPORT YANG TELAH DIPERBAIKI (PRODUCTION READY) ---
+// --- FUNGSI EXPORT (MENGGUNAKAN HTML-TO-IMAGE MODERN) ---
 const handleDownloadImage = async () => {
   setIsExporting(true);
   
-  // Tunggu DOM me-render kelas CSS `export-mode` yang baru
-  await new Promise((resolve) => setTimeout(resolve, 200));
+  // Tunggu DOM me-render kelas CSS `export-mode`
+  await new Promise((resolve) => setTimeout(resolve, 300));
   
   try {
     const element = document.getElementById('report-container');
+    if (!element) throw new Error("ID report-container tidak ditemukan");
     
-    // Langsung panggil html2canvas karena sudah di-import di atas
-    const canvas = await html2canvas(element, { 
-      scale: 2, 
-      useCORS: true, 
+    // Menggunakan htmlToImage (support Tailwind v4 oklch)
+    const dataUrl = await htmlToImage.toPng(element, { 
+      quality: 1.0,
       backgroundColor: "#f3f4f6",
-      windowWidth: 1200, 
-      width: 1200 
+      pixelRatio: 2 // Membuat gambar menjadi resolusi tinggi (HD)
     });
     
+    const safeName = identity?.name ? identity.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'atlet';
     const link = document.createElement("a");
-    const safeName = identity.name ? identity.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'atlet';
     link.download = `Rapor_Fisik_Taekwondo_${safeName}.png`;
-    link.href = canvas.toDataURL("image/png");
+    link.href = dataUrl;
     link.click();
   } catch (error) {
     console.error("Gagal export:", error);
