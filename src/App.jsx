@@ -302,14 +302,17 @@ const handleDownloadImage = async () => {
             </h1>
           </div>
           <div className="text-right">
-            <div className="no-print flex items-center justify-end gap-2 mb-4" data-html2canvas-ignore="true">
-              <button onClick={handleReset} className="bg-white/10 hover:bg-red-500/90 hover:border-red-500 text-white backdrop-blur-md border border-white/20 px-4 py-2.5 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all" title="Bersihkan untuk Atlet Berikutnya">
+     {/* FIX: Sembunyikan tombol saat proses export */}
+     {!isExporting && (
+            <div className="no-print flex items-center justify-end gap-2 mb-4">
+              <button onClick={handleReset} className="bg-white/10 hover:bg-red-500/90 text-white px-4 py-2 rounded-xl transition-all duration-300 flex items-center gap-2 text-sm font-bold tracking-wide backdrop-blur-sm border border-white/10 hover:border-red-500/50 shadow-lg">
                 <IconReset /> <span className="hidden md:inline">Reset Data</span>
               </button>
-              <button onClick={handleDownloadImage} disabled={isExporting} className="bg-yellow-400 hover:bg-yellow-500 text-black border border-yellow-400 px-5 py-2.5 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all shadow-md disabled:opacity-70 disabled:cursor-wait">
+              <button onClick={handleDownloadImage} disabled={isExporting} className="bg-tkd-yellow hover:bg-yellow-400 text-tkd-black px-6 py-2 rounded-xl transition-all duration-300 flex items-center gap-2 text-sm font-black tracking-wide border border-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.3)] hover:shadow-[0_0_25px_rgba(250,204,21,0.5)] disabled:opacity-70 disabled:cursor-not-allowed">
                 <IconDownload /> {isExporting ? 'Memproses...' : 'Unduh Rapor (PNG)'}
               </button>
             </div>
+          )}
             <p className="font-bold text-gray-400 text-xs tracking-widest uppercase">Platform Olahraga<br/>by <span className="text-white">fiqhipondaa9</span></p>
           </div>
         </div>
