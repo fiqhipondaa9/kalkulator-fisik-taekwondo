@@ -225,12 +225,12 @@ const handleDownloadImage = async () => {
   setIsExporting(true);
   
   // Tunggu DOM me-render kelas CSS `export-mode` yang baru
-  await new Promise(resolve => setTimeout(resolve, 200));
+  await new Promise((resolve) => setTimeout(resolve, 200));
   
   try {
     const element = document.getElementById('report-container');
     
-    // Langsung panggil html2canvas karena sudah di-import di atas (bukan window.html2canvas lagi)
+    // Langsung panggil html2canvas karena sudah di-import di atas
     const canvas = await html2canvas(element, { 
       scale: 2, 
       useCORS: true, 
@@ -250,40 +250,7 @@ const handleDownloadImage = async () => {
   } finally {
     setIsExporting(false);
   }
-};      
-      
-const element = document.getElementById('report-container');
-      
-      // FIX 1: Konfigurasi html2canvas agar memaksa render dalam ukuran lebar jendela simulasi (1200px)
-      // Ini menyelesaikan masalah Asimetris margin Kanan yang tadinya terpotong
-      const canvas = await window.html2canvas(element, { 
-        scale: 2, 
-        useCORS: true, 
-        backgroundColor: "#f3f4f6",
-        windowWidth: 1200, 
-        width: 1200 
-      });
-      
-      const link = document.createElement("a");
-      const safeName = identity.name ? identity.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'atlet';
-      link.download = `Rapor_Fisik_Taekwondo_${safeName}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } catch (error) {
-      alert("Gagal membuat gambar rapor. Silakan coba lagi.");
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const handleReset = () => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus semua data untuk menguji atlet berikutnya?")) {
-      setIdentity({ name: '', origin: '', dob: '', gender: 'Putra' });
-      setAnthro({ weight: '', height: '', armSpan: '', sitHeight: '' });
-      setTests({ sitReach: '', pushUp: '', sitUp: '', core: '', vJump: '', hopRight: '', hopLeft: '', shuttle: '', sprint: '', beepLevel: '', beepShuttle: '' });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+};
 
   return (
     <div id="report-container" className={`min-h-screen bg-gray-100 text-gray-800 font-sans pb-12 relative ${isExporting ? 'w-[1200px] min-w-[1200px] mx-auto overflow-hidden' : ''}`}>
