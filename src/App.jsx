@@ -29,9 +29,9 @@ const getTargetPlaceholder = (id, gender) => {
 
 // --- FUNGSI SCORING LOGIC (Berdasarkan PERMENPORA 15/2024 & Interpolasi Saintifik) ---
 const getScore = (test, gender, value) => {
-  if (!value || isNaN(value)) return 0;
-  // Pembulatan epsilon (+ 0.0001) untuk mencegah error floating-point di JavaScript pada angka desimal
-  const v = parseFloat(value) + 0.0001; 
+  if (value === '' || value === null || isNaN(value)) return 0;
+  // Parse langsung
+  const v = parseFloat(value); 
   const isM = gender === 'Putra';
 
   switch(test) {
@@ -139,15 +139,25 @@ export default function App() {
 
   const age = useMemo(() => {
     if (!identity.dob) return '-';
-    const diff = new Date() - new Date(identity.dob);
-    return Math.floor(diff / 31557600000); 
+    const birthDate = new Date(identity.dob);
+    const today = new Date();
+    let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    
+    // Kurangi umur 1 tahun jika bulan/tanggal hari ini belum melewati hari ulang tahun
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      calculatedAge--;
+    }
+    return calculatedAge;
   }, [identity.dob]);
 
   const bmiData = useMemo(() => {
     // FIX: Ubah nilai default BMI dari 0 menjadi '-' agar terlihat elegan saat form kosong
-    if (!anthro.weight || !anthro.height) return { bmi: '-', status: '-', color: 'text-gray-400' };
-    const hM = anthro.height / 100;
-    const bmi = (anthro.weight / (hM * hM)).toFixed(1);
+    if (!anthro.weight || !anthro.height || anthro.height <= 0) return { bmi: '-', status: '-', color: 'text-gray-400' };
+  
+  const hM = anthro.height / 100;
+  const bmiValue = (anthro.weight / (hM * hM));
+  const bmi = bmiValue.toFixed(1);
     let status = 'Kurus'; let color = 'text-blue-500';
     if (bmi >= 18.5 && bmi <= 24.9) { status = 'Ideal'; color = 'text-green-500'; }
     else if (bmi >= 25 && bmi <= 29.9) { status = 'Gemuk'; color = 'text-amber-500'; }
@@ -184,7 +194,7 @@ export default function App() {
   const calculatedVO2Max = useMemo(() => {
     const l = parseInt(tests.beepLevel);
     const s = parseInt(tests.beepShuttle);
-    if (!l || !s || l < 1 || s < 1) return 0;
+    if (!l || !s || l < 1 || s < 1) return '';
     const vo2max = 3.46 * (l + s / (l * 0.4325 + 7.0048)) + 12.2;
     return parseFloat(vo2max.toFixed(1));
   }, [tests.beepLevel, tests.beepShuttle]);
