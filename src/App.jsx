@@ -260,7 +260,7 @@ const handleDownloadImage = async () => {
 };
 
   return (
-    <div id="report-container" className={`min-h-screen bg-gray-100 text-gray-800 font-sans pb-12 relative ${isExporting ? 'w-[1200px] min-w-[1200px] mx-auto overflow-hidden' : ''}`}>
+    <div id="report-container" className="min-h-screen bg-gray-100 flex flex-col items-center py-10 px-4 font-sans print:bg-white print:py-0 print:px-0">
       
       {isExporting && (
         <style dangerouslySetInnerHTML={{__html: `
