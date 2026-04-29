@@ -363,8 +363,8 @@ const handleDownloadImage = async () => {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-500 uppercase ml-1">Jenis Kelamin</label>
                 <select value={identity.gender} onChange={e => setIdentity({...identity, gender: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:border-yellow-400 transition-all cursor-pointer">
-                  <option value="Putra">Putra (Laki-laki)</option>
-                  <option value="Putri">Putri (Perempuan)</option>
+                  <option value="Putra">Putra (Male)</option>
+                  <option value="Putri">Putri (Female)</option>
                 </select>
               </div>
             </div>
